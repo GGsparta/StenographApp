@@ -8,15 +8,14 @@
     android:padding="5dp">
 
     <GridView
+        android:id="@+id/gridView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/gridView"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:columnWidth="100dp"
-        android:numColumns="auto_fit"
+        android:layout_centerVertical="true"
         android:horizontalSpacing="5dp"
-        android:verticalSpacing="5dp"
+        android:columnWidth="0dp"
+        android:numColumns="3"
         android:stretchMode="columnWidth"
-        />
+        android:verticalSpacing="5dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
