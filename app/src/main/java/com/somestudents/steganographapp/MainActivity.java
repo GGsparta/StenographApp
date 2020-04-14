@@ -1,18 +1,15 @@
 package com.somestudents.steganographapp;
 
 import android.Manifest;
-import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.PermissionChecker;
 
 import java.util.ArrayList;
 
@@ -25,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Initialisation de la gridview
-        GridView gridView = (GridView) findViewById(R.id.gridView);
+        GridView gridView = findViewById(R.id.gridView);
 
         //on check si on a les permission pour accéder aux images de la carte sd de l'appareil
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
@@ -39,7 +36,9 @@ public class MainActivity extends AppCompatActivity {
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long l) {
-                    //déclancher l'activité qui ouvre l'image
+                    Intent i = new Intent(getApplicationContext(),FullImageActivity.class);
+                    i.putExtra("id",position);
+                    startActivity(i);
                 }
             });
         }
@@ -52,10 +51,7 @@ public class MainActivity extends AppCompatActivity {
             }
             //on demande la permission
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
-
-
         }
-
     }
 
 
