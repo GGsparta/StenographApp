@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -20,11 +19,11 @@ import java.util.ArrayList;
 public class ImageAdapter extends BaseAdapter {
 
     //la liste des adresses de toutes les images
-    private ArrayList<String> AllPathPicture = new ArrayList<String>();
+    private ArrayList<String> AllPathPicture = new ArrayList<>();
 
     private Context context;
 
-    public ImageAdapter(Context c){ context = c; }
+    ImageAdapter(Context c){ context = c; }
 
 
     @Override
@@ -34,7 +33,7 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public long getItemId(int i) { return 0;}
 
-     @Override
+    @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
         //on initialise une imageview en fonction du context
         ImageView imageView = new ImageView(context);
@@ -62,17 +61,18 @@ public class ImageAdapter extends BaseAdapter {
     void PathOfImages(String criteria){
         ContentResolver cr = context.getContentResolver();
         Uri imgsURI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String sortOrder = MediaStore.Images.Media.TITLE +" ASC";
+        String sortOrder = MediaStore.Images.Media.DATE_MODIFIED +" DESC";
 
         Cursor cursor = cr.query(imgsURI, new String[]{MediaStore.Images.Media.DATA, MediaStore.Images.Media.DISPLAY_NAME}, criteria, null, sortOrder);
 
+        assert cursor != null;
         if(cursor.moveToFirst()){
             do{
                 if(cursor.getString(0)!=null){
                     String imagePath = cursor.getString(0);
                     AllPathPicture.add(imagePath);
                 }
-            }while (cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
         cursor.close();
     }
