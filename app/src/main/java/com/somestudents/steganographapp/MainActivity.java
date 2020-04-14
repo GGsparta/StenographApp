@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -39,15 +38,24 @@ public class MainActivity extends AppCompatActivity {
 
         if(cursor == null) return;
 
-        if(cursor.moveToFirst()) {
+        if(cursor.moveToFirst()/* && cursor.moveToNext()*/) {
             // Init
             Bitmap refImage = BitmapFactory.decodeFile(cursor.getString(0));
             ImageView view = findViewById(R.id.image);
 
             Steganograph steganograph = new Steganograph();
 
-            Bitmap newImage = steganograph.encodePicture(refImage, "Un texte super secret");
-            String hiddenText = steganograph.decodePicture(refImage);
+            Bitmap newImage = null;
+            try {
+                newImage = steganograph.encodePicture(refImage,
+                        "Hello"
+                                .toCharArray());
+            } catch (ImageTooSmallException imageTooSmallException) {
+                imageTooSmallException.printStackTrace();
+            }
+
+            assert newImage != null;
+            String hiddenText = steganograph.decodePicture(newImage);
 
             TextView text = findViewById(R.id.text);
             view.setImageBitmap(newImage);
