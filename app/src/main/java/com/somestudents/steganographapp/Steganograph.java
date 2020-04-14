@@ -183,7 +183,6 @@ class Steganograph {
     PRIVATE: CONVERSION/OPTIMIZATION METHODS
 
      */
-
     private boolean[] toBitArray(int number, int typeSize) {
         boolean[] result = new boolean[typeSize];
         for(int i = 1; i < result.length; ++i)

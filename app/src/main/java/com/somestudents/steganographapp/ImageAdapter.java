@@ -33,7 +33,7 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public long getItemId(int i) { return 0;}
 
-     @Override
+    @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
         //on initialise une imageview en fonction du context
         ImageView imageView = new ImageView(context);
@@ -61,7 +61,7 @@ public class ImageAdapter extends BaseAdapter {
     void PathOfImages(String criteria){
         ContentResolver cr = context.getContentResolver();
         Uri imgsURI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String sortOrder = MediaStore.Images.Media.TITLE +" ASC";
+        String sortOrder = MediaStore.Images.Media.DATE_MODIFIED +" DESC";
 
         Cursor cursor = cr.query(imgsURI, new String[]{MediaStore.Images.Media.DATA, MediaStore.Images.Media.DISPLAY_NAME}, criteria, null, sortOrder);
 
@@ -72,7 +72,7 @@ public class ImageAdapter extends BaseAdapter {
                     String imagePath = cursor.getString(0);
                     AllPathPicture.add(imagePath);
                 }
-            }while (cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
         cursor.close();
     }

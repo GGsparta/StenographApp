@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         //on check si on a les permission pour accéder aux images de la carte sd de l'appareil
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             //si on a la permission, on récupère la liste de toutes les images puis on les affiche
-            ImageAdapter imgs = new ImageAdapter(this);
+            final ImageAdapter imgs = new ImageAdapter(this);
             //adresse des images
             imgs.PathOfImages( null);
             //utilise l'imageAdapter pour afficher chaque image dans la grille
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long l) {
                     Intent i = new Intent(getApplicationContext(),FullImageActivity.class);
-                    i.putExtra("id",position);
+                    i.putExtra("path", (String) imgs.getItem(position));
                     startActivity(i);
                 }
             });
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
             if(shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)){
                 //dans le cas où on a pas les autorisations, on ouvre la boite de dialogue qui dit que sans les permissions l'application
                 // ne peut pas fonctionner + ferme l'application
-                Toast.makeText(this, "Files Storage access is needed for this applicaiton", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Files Storage access is needed for this application", Toast.LENGTH_SHORT).show();
             }
             //on demande la permission
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
