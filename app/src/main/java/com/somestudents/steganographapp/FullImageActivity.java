@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 public class FullImageActivity extends AppCompatActivity {
 
@@ -73,11 +74,13 @@ public class FullImageActivity extends AppCompatActivity {
         }
 
         // Try encoding
+        long startTime = System.currentTimeMillis();
         try {
             image = steganograph.encodePicture(image, editText.getText().toString().toCharArray());
             //imageView.setImageBitmap(image);
         } catch (ImageTooSmallException e) {
             e.printStackTrace();
+            Toast.makeText(this, "Image too small for encoding!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -86,8 +89,11 @@ public class FullImageActivity extends AppCompatActivity {
             SaveBitmap(image);
         } catch (IOException e) {
             e.printStackTrace();
+            Toast.makeText(this, "Failed to save the picture", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        Toast.makeText(this, String.format(Locale.CANADA, "Text encoded in %dms", System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
 
         // Return to main activity
         finish();
