@@ -7,58 +7,58 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.util.ArrayList;
 
-public class ImageAdapter extends BaseAdapter {
+public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
+    private ItemClickListener mClickListener;
+    private LayoutInflater mInflater;
 
     //la liste des adresses de toutes les images
     private ArrayList<String> AllPathPicture = new ArrayList<>();
 
     private Context context;
 
-    ImageAdapter(Context c){ context = c; }
 
-
-    @Override
-    public int getCount() { return AllPathPicture.size(); }
-    @Override
-    public Object getItem(int position) {return AllPathPicture.get(position);}
-    @Override
-    public long getItemId(int i) { return 0;}
-
-    @Override
-    public View getView(int position, View view, ViewGroup viewGroup) {
-        //on initialise une imageview en fonction du context
-        ImageView imageView = new ImageView(context);
-
-        //on récupère l'image via son adresse sous la forme d'un fichier (l'appli ne reconnait pas encore que c'est une image)
-         File imgFile = new  File(AllPathPicture.get(position));
-         if(imgFile.exists()){ // si le fichier existe
-             //on décode le fichier sous un fichier bitmap (fichier image reconnu par l'appli
-             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-             //on affiche l'image au format bitmap dans l'imageview
-             imageView.setImageBitmap(myBitmap);
-         }
-         //on centre l'image dans le carré de façon à ce qu'elle prenne tout l'espace sur sa vignette quitte à être coupé
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
-         //taille de la vignette
-         imageView.setLayoutParams(new GridView.LayoutParams( viewGroup.getWidth()/3, viewGroup.getWidth()/3));
-
-
-        //on retourne l'image nouvellement lue
-        return imageView;
+    ImageAdapter(Context c){
+        context = c;
+        mInflater = LayoutInflater.from(context);
     }
 
-// méthode qui permet de remplir la list AllPathPicture pour le reste des opérations
-    void PathOfImages(String criteria){
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = mInflater.inflate(R.layout.recyclerview_item, parent, false);
+        return new ViewHolder(view);
+    }
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
+        //on récupère l'image via son adresse sous la forme d'un fichier (l'appli ne reconnait pas encore que c'est une image)
+        File imgFile = new  File(AllPathPicture.get(position));
+        if(imgFile.exists()){ // si le fichier existe
+            //on décode le fichier sous un fichier bitmap (fichier image reconnu par l'appli
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            //on affiche l'image au format bitmap dans l'imageview
+            holder.setImage(myBitmap);
+        }
+    }
+    String getItem(int i) { return AllPathPicture.get(i);}
+    @Override
+    public int getItemCount() { return AllPathPicture.size();}
+
+
+    // méthode qui permet de remplir la list AllPathPicture pour le reste des opérations
+    void generatePathOfImages(String criteria){
         ContentResolver cr = context.getContentResolver();
         Uri imgsURI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String sortOrder = MediaStore.Images.Media.DATE_MODIFIED +" DESC";
@@ -77,4 +77,35 @@ public class ImageAdapter extends BaseAdapter {
         cursor.close();
     }
 
+
+    // stores and recycles views as they are scrolled off screen
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private ImageView imageItem;
+
+        ViewHolder(View itemView) {
+            super(itemView);
+            imageItem = itemView.findViewById(R.id.imageItem);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+        }
+
+        void setImage(Bitmap image) {
+            imageItem.setImageBitmap(image);
+        }
+    }
+
+
+    // allows clicks events to be caught
+    void setOnItemClickListener(ItemClickListener itemClickListener) {
+        this.mClickListener = itemClickListener;
+    }
+
+    // parent activity will implement this method to respond to click events
+    public interface ItemClickListener {
+        void onItemClick(View view, int position);
+    }
 }

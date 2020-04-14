@@ -1,6 +1,8 @@
 package com.somestudents.steganographapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Intent;
@@ -62,15 +64,9 @@ public class FullImageActivity extends AppCompatActivity {
     /*cette fonction est appelé lorsque le bouton apply est appuyé*/
     public void SetMessage(View view) {
         // Check permissions
-        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                //dans le cas où on a pas les autorisations, on ouvre la boite de dialogue qui dit que sans les permissions l'application
-                // ne peut pas fonctionner + ferme l'application
-                Toast.makeText(this, "Files Storage access is needed for this application", Toast.LENGTH_SHORT).show();
-            }
-
-            //on demande la permission
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 3);
+        if(!checkPermissions()) {
+            Toast.makeText(this, "Impossible to encode without user permission", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         // Try encoding
@@ -84,6 +80,8 @@ public class FullImageActivity extends AppCompatActivity {
             return;
         }
 
+        Toast.makeText(this, String.format(Locale.CANADA, "Text encoded in %dms", System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
+
         // Save file
         try {
             SaveBitmap(image);
@@ -93,7 +91,6 @@ public class FullImageActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(this, String.format(Locale.CANADA, "Text encoded in %dms", System.currentTimeMillis() - startTime), Toast.LENGTH_SHORT).show();
 
         // Return to main activity
         finish();
@@ -113,5 +110,22 @@ public class FullImageActivity extends AppCompatActivity {
         fos.write(bitmapdata);
         fos.flush();
         fos.close();
+    }
+
+    private boolean checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                // Explain to the user why we need to read the contacts
+                return false;
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 3);
+                return true;
+            }
+        }
+
+        return true;
     }
 }
