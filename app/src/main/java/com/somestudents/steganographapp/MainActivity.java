@@ -1,100 +1,62 @@
 package com.somestudents.steganographapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.GridView;
+import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.PermissionChecker;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 10;
-    private int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 11;
 
+    public ArrayList<String> AllPath= new ArrayList<String>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(!checkPermissions())
-            return;
+        //Initialisation de la gridview
+        GridView gridView = (GridView) findViewById(R.id.gridView);
 
+        //on check si on a les permission pour accéder aux images de la carte sd de l'appareil
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            //si on a la permission, on récupère la liste de toutes les images puis on les affiche
+            ImageAdapter imgs = new ImageAdapter(this);
+            //adresse des images
+            imgs.PathOfImages( null);
+            //utilise l'imageAdapter pour afficher chaque image dans la grille
+            gridView.setAdapter(imgs);
 
-        Uri imagesURI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String sortOrder = MediaStore.Images.Media.DATE_ADDED + " DESC";
-
-        Cursor cursor = getContentResolver().query(imagesURI, new String[] {
-                MediaStore.Images.Media.DATA,
-                MediaStore.Images.Media.TITLE
-        }, "", null, sortOrder);
-
-        if(cursor == null) return;
-
-        if(cursor.moveToFirst()/* && cursor.moveToNext()*/) {
-            // Init
-            Bitmap refImage = BitmapFactory.decodeFile(cursor.getString(0));
-            ImageView view = findViewById(R.id.image);
-
-            Steganograph steganograph = new Steganograph();
-
-            Bitmap newImage = null;
-            try {
-                newImage = steganograph.encodePicture(refImage,
-                        "Hello"
-                                .toCharArray());
-            } catch (ImageTooSmallException imageTooSmallException) {
-                imageTooSmallException.printStackTrace();
-            }
-
-            assert newImage != null;
-            String hiddenText = steganograph.decodePicture(newImage);
-
-            TextView text = findViewById(R.id.text);
-            view.setImageBitmap(newImage);
-            text.setText(hiddenText);
+            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long l) {
+                    //déclancher l'activité qui ouvre l'image
+                }
+            });
         }
+        else //si on n'a pas les permissions
+        {
+            if(shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)){
+                //dans le cas où on a pas les autorisations, on ouvre la boite de dialogue qui dit que sans les permissions l'application
+                // ne peut pas fonctionner + ferme l'application
+                Toast.makeText(this, "Files Storage access is needed for this applicaiton", Toast.LENGTH_SHORT).show();
+            }
+            //on demande la permission
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
 
-        cursor.close();
+
+        }
 
     }
 
-    private boolean checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                // Explain to the user why we need to read the contacts
-                return false;
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-                return true;
-            }
-        }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                // Explain to the user why we need to read the contacts
-                return false;
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-                return true;
-            }
-        }
-
-        return true;
-    }
 }
