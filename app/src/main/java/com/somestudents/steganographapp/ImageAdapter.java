@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -20,11 +19,11 @@ import java.util.ArrayList;
 public class ImageAdapter extends BaseAdapter {
 
     //la liste des adresses de toutes les images
-    private ArrayList<String> AllPathPicture = new ArrayList<String>();
+    private ArrayList<String> AllPathPicture = new ArrayList<>();
 
     private Context context;
 
-    public ImageAdapter(Context c){ context = c; }
+    ImageAdapter(Context c){ context = c; }
 
 
     @Override
@@ -66,6 +65,7 @@ public class ImageAdapter extends BaseAdapter {
 
         Cursor cursor = cr.query(imgsURI, new String[]{MediaStore.Images.Media.DATA, MediaStore.Images.Media.DISPLAY_NAME}, criteria, null, sortOrder);
 
+        assert cursor != null;
         if(cursor.moveToFirst()){
             do{
                 if(cursor.getString(0)!=null){
