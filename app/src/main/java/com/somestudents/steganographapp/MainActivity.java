@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         //utilise l'imageAdapter pour afficher chaque image dans la grille
         galleryView.setAdapter(imgs);
         galleryView.setHasFixedSize(true);
-        galleryView.setItemViewCacheSize(20);
+        galleryView.setItemViewCacheSize(30);
     }
 
     private boolean checkPermissions() {
