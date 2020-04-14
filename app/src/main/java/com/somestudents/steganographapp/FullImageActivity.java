@@ -1,5 +1,6 @@
 package com.somestudents.steganographapp;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
@@ -7,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -59,6 +61,7 @@ public class FullImageActivity extends AppCompatActivity {
     }
 
     /*cette fonction est appelé lorsque le bouton apply est appuyé*/
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void SetMessage(View view) {
         // Check permissions
         if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
