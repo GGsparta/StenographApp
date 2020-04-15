@@ -81,6 +81,8 @@ class Steganograph {
         byte[] bytes = byteBuffer.array();
         reinitializeCursor(true);
 
+        System.out.println(String.format(Locale.CANADA, "Image format: %s", refImage.getConfig().toString()));
+
         // Checking signature
         if(readNumber(bytes, SIZE_OF_INT) != APP_SIGNATURE)
             return result.toString();
@@ -92,8 +94,6 @@ class Steganograph {
                 || (size - SIZE_OF_BYTE) * nbEncodedBitsPerByte < 2 * SIZE_OF_INT)
             return result.toString();
         reinitializeCursor(false);
-
-        System.out.println(String.format(Locale.CANADA, "Image format: %s", refImage.getConfig().toString()));
 
         // Reading text size
         int textSize = readNumber(bytes, SIZE_OF_INT);
