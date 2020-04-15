@@ -6,9 +6,12 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -80,17 +83,42 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private final int doubleClickTimeout;
+        private Handler handler;
+        private long firstClickTime;
+
         private ImageView imageItem;
 
         ViewHolder(View itemView) {
             super(itemView);
             imageItem = itemView.findViewById(R.id.imageItem);
             itemView.setOnClickListener(this);
+
+            doubleClickTimeout = ViewConfiguration.getDoubleTapTimeout();
+            firstClickTime = 0L;
+            handler = new Handler(Looper.getMainLooper());
         }
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+            if (mClickListener == null)
+                return;
+
+            long now = System.currentTimeMillis();
+
+            if (now - firstClickTime < doubleClickTimeout) {
+                handler.removeCallbacksAndMessages(null);
+                firstClickTime = 0L;
+                mClickListener.onItemClick(view, getAdapterPosition());
+            } else {
+                firstClickTime = now;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        firstClickTime = 0L;
+                    }
+                }, doubleClickTimeout);
+            }
         }
 
         void setImage(Bitmap image) {

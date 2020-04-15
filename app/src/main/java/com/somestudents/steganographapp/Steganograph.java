@@ -54,6 +54,7 @@ class Steganograph {
             throw new ImageTooSmallException();
         writeBits(bytes, toBitArray(nbEncodedBitsPerByte, SIZE_OF_BYTE));
         reinitializeCursor(false);
+
         System.out.println(String.format(Locale.CANADA, "Using %d bits per byte", nbEncodedBitsPerByte));
 
         // Defining size
@@ -91,6 +92,8 @@ class Steganograph {
                 || (size - SIZE_OF_BYTE) * nbEncodedBitsPerByte < 2 * SIZE_OF_INT)
             return result.toString();
         reinitializeCursor(false);
+
+        System.out.println(String.format(Locale.CANADA, "Image format: %s", refImage.getConfig().toString()));
 
         // Reading text size
         int textSize = readNumber(bytes, SIZE_OF_INT);
